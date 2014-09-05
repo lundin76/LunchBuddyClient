@@ -10,6 +10,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
@@ -32,7 +35,18 @@ import android.widget.TextView;
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 	
+	public static String DISH_KEY_NAME;
+	public static String DISH_KEY_TYPE;
+	public static int DISH_KEY_IMAGE_ID;
+	public static String DISH_KEY_IMAGE_INSTR;
+	public static String DISH_KEY_IMAGE_NAME;
+	
 	private Dish[] mDishes;
+	private MyAdapter mAdapter;
+	
+	ArrayList<Dish> mDishesPasta;
+	ArrayList<Dish> mDishesSoup;
+	ArrayList<Dish> mDishesVeg;
 	
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -46,6 +60,7 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private CharSequence mTitle;
 	private ListView mDishesListView;
+	public static final String SERIALIZABLE_KEY = "com.example.dinnertime";
 
 	
 	@Override
@@ -53,27 +68,26 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		mDishes = new Dish[]{new Dish("Spagetti bolognese", "pasta", getResources().getDrawable(R.drawable.pasta1)),new Dish("Lasagne", "pasta", getResources().getDrawable(R.drawable.pasta2)), new Dish("Stuvade makaroner", "pasta", getResources().getDrawable(R.drawable.pasta3)) ,new Dish("Soup1", "soup", getResources().getDrawable(R.drawable.soppa1)),new Dish("Soup2", "soup", getResources().getDrawable(R.drawable.soppa2)),new Dish("Soup3", "soup", getResources().getDrawable(R.drawable.soppa3)), new Dish("Vegetariskt 1", "vegetarian", getResources().getDrawable(R.drawable.veg1)), new Dish("Vegetariskt 2", "vegetarian", getResources().getDrawable(R.drawable.veg2))};
+		mDishes = new Dish[]{new Dish("Spagetti bolognese", "pasta", getResources().getDrawable(R.drawable.pasta1), "pasta1"), new Dish("Lasagne", "pasta", getResources().getDrawable(R.drawable.pasta2), "pasta2"), new Dish("Stuvade makaroner", "pasta", getResources().getDrawable(R.drawable.pasta3), "pasta3") ,new Dish("Soup1", "soup", getResources().getDrawable(R.drawable.soppa1), "soppa1"), new Dish("Soup2", "soup", getResources().getDrawable(R.drawable.soppa2), "soppa2"), new Dish("Soup3", "soup", getResources().getDrawable(R.drawable.soppa3), "soppa3"), new Dish("Vegetariskt 1", "vegetarian", getResources().getDrawable(R.drawable.veg1), "veg1"), new Dish("Vegetariskt 2", "vegetarian", getResources().getDrawable(R.drawable.veg2), "veg2")};
 		
-		ArrayList<Dish> mDishesPasta = new ArrayList<Dish>();
-		ArrayList<Dish> mDishesSoup = new ArrayList<Dish>();
-		ArrayList<Dish> mDishesVeg= new ArrayList<Dish>();
+		mDishesListView =(ListView) findViewById(R.id.dishesListView);
 		
+		mDishesPasta = new ArrayList<Dish>();
+		mDishesSoup = new ArrayList<Dish>();
+		mDishesVeg= new ArrayList<Dish>();
+	
 		for(Dish d : mDishes){
 			if(d.getType().equals("pasta")){
 				mDishesPasta.add(d);
 			}
-			if(d.getType().equals("vegetarian")){
+			if(d.getType().equals("vegetarian")){	
 				mDishesVeg.add(d);
 			}
 			if(d.getType().equals("soup")){
 				mDishesSoup.add(d);
 			}
 		}
-		
-		mDishesListView =(ListView) findViewById(R.id.dishesListView);
-		mDishesListView.setAdapter(new MyAdapter(mDishes));
-		
+						
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -84,29 +98,59 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	private class MyAdapter extends ArrayAdapter<Dish> {
-		public MyAdapter(Dish[] dishes){
-			super(MainActivity.this, R.layout.row_layout , dishes);			
+		ArrayList<Dish> dishes;
+		
+		public MyAdapter(ArrayList<Dish> dishes){
+			super(MainActivity.this, R.layout.row_layout , dishes);
+			this.dishes=dishes;
 		}
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView, ViewGroup parent) {
 			LinearLayout llin = (LinearLayout) convertView;
 			TextView tv;
 			ImageView im;
+			
+			System.out.println("View");
+			
+			
+			OnClickListener cl = new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					Dish temp = dishes.get(position);
+					
+					int drawableID = getResources().getIdentifier(temp.getImageName(),"drawable", MainActivity.this.getPackageName());
+					Intent myIntent = new Intent(MainActivity.this, DishActivity.class);
+					myIntent.putExtra(String.valueOf(MainActivity.DISH_KEY_IMAGE_ID), drawableID);
+					myIntent.putExtra(MainActivity.DISH_KEY_IMAGE_INSTR, temp.getInstructions());
+					myIntent.putExtra(MainActivity.DISH_KEY_NAME, temp.getImageName());
+					myIntent.putExtra(MainActivity.DISH_KEY_TYPE, temp.getType());
+					myIntent.putExtra(MainActivity.DISH_KEY_IMAGE_NAME, temp.getImageName());
+					
+					startActivity(myIntent);		
+					
+										
+				}				
+			};
+			
+			
+			
 			if(llin==null){
 				LayoutInflater li = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				LinearLayout llnew = (LinearLayout) li.inflate(R.layout.row_layout, parent, false);
 				tv = (TextView) llnew.findViewById(R.id.dishText);
 				im = (ImageView) llnew.findViewById(R.id.dishImageView); 
 				
-				tv.setText(mDishes[position].getName());		
-				im.setImageDrawable(mDishes[position].getImage());
+				tv.setText(dishes.get(position).getName());		
+				im.setImageDrawable(dishes.get(position).getImage());
+				im.setOnClickListener(cl);
 				return llnew;
 			}else{
 				tv = (TextView) llin.findViewById(R.id.dishText);
 				im = (ImageView) llin.findViewById(R.id.dishImageView); 
 				
-				tv.setText(mDishes[position].getName());	
-				im.setImageDrawable(mDishes[position].getImage());
+				tv.setText(dishes.get(position).getName());	
+				im.setImageDrawable(dishes.get(position).getImage());
+				im.setOnClickListener(cl);
 				return llin;
 			}
 			
@@ -127,12 +171,19 @@ public class MainActivity extends ActionBarActivity implements
 		switch (number) {
 		case 1:
 			mTitle = getString(R.string.title_section1);
+			mAdapter=new MyAdapter(mDishesPasta);
+			mDishesListView.setAdapter(mAdapter);
 			break;
 		case 2:
 			mTitle = getString(R.string.title_section2);
+			mAdapter=new MyAdapter(mDishesVeg);
+			mDishesListView.setAdapter(mAdapter);
 			break;
 		case 3:
 			mTitle = getString(R.string.title_section3);
+			mAdapter=new MyAdapter(mDishesSoup);
+			mDishesListView.setAdapter(mAdapter);
+			
 			break;
 		case 4:
 			mTitle = getString(R.string.title_section4);
