@@ -1,10 +1,8 @@
 package com.example.dinnertime;
 
-import java.io.Serializable;
-
 import android.graphics.drawable.Drawable;
 
-public class Dish implements Serializable {
+public class Dish {
 	
 	public Dish() {
 		super();
