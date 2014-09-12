@@ -28,7 +28,6 @@
 		        android:scrollbars="vertical" />
  
 		</ScrollView>
-
 		<Button
 		    android:id="@+id/ingredientsBtn"
 		    android:layout_width="match_parent"

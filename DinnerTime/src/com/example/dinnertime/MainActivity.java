@@ -1,7 +1,5 @@
 package com.example.dinnertime;
 
-
-
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -24,8 +22,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
-
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -104,10 +100,7 @@ public class MainActivity extends ActionBarActivity implements
 			LinearLayout llin = (LinearLayout) convertView;
 			TextView tv;
 			ImageView im;
-			
-			System.out.println("View");
-			
-			
+						
 			OnClickListener cl = new OnClickListener(){
 				@Override
 				public void onClick(View v) {
@@ -121,24 +114,20 @@ public class MainActivity extends ActionBarActivity implements
 					myIntent.putExtra(MainActivity.DISH_KEY_TYPE, temp.getType());
 					myIntent.putExtra(MainActivity.DISH_KEY_IMAGE_NAME, temp.getImageName());
 					
-					startActivity(myIntent);		
-					
-										
+					startActivity(myIntent);												
 				}				
 			};
 			
-			
-			
 			if(llin==null){
 				LayoutInflater li = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				LinearLayout llnew = (LinearLayout) li.inflate(R.layout.row_layout, parent, false);
-				tv = (TextView) llnew.findViewById(R.id.dishText);
-				im = (ImageView) llnew.findViewById(R.id.dishImageView); 
+				llin = (LinearLayout) li.inflate(R.layout.row_layout, parent, false);
+				tv = (TextView) llin.findViewById(R.id.dishText);
+				im = (ImageView) llin.findViewById(R.id.dishImageView); 
 				
 				tv.setText(dishes.get(position).getName());		
 				im.setImageDrawable(dishes.get(position).getImage());
 				im.setOnClickListener(cl);
-				return llnew;
+				return llin;
 			}else{
 				tv = (TextView) llin.findViewById(R.id.dishText);
 				im = (ImageView) llin.findViewById(R.id.dishImageView); 
@@ -148,7 +137,6 @@ public class MainActivity extends ActionBarActivity implements
 				im.setOnClickListener(cl);
 				return llin;
 			}
-			
 		}
 	}
 
