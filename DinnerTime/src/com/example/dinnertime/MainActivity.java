@@ -51,7 +51,7 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private CharSequence mTitle;
 	private ListView mDishesListView;
-	public static final String SERIALIZABLE_KEY = "com.example.dinnertime";
+	private final static String xml_asset_path = "dishes.xml";
 
 	
 	@Override
@@ -67,6 +67,11 @@ public class MainActivity extends ActionBarActivity implements
 		mDishesSoup = new ArrayList<Dish>();
 		mDishesVeg= new ArrayList<Dish>();
 	
+		String xml = new DataFetch(MainActivity.this).fetchXML(xml_asset_path);
+		
+		System.out.println("XML: " + xml);
+		
+		
 		for(Dish d : mDishes){
 			if(d.getType().equals("pasta")){
 				mDishesPasta.add(d);

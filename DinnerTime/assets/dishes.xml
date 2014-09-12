@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Dishes>
+    <Dish category="pasta" name="Spaghetti" description="This is the description of the spaghetti dish" image_url="url">
+    </Dish>    
+    <Dish category="vegetarian" name="sallad" description="This is the description of the spaghetti dish" image_url="url">
+    </Dish>    
+</Dishes>
