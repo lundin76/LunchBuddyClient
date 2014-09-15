@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,15 +25,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity implements
-		NavigationDrawerFragment.NavigationDrawerCallbacks {
+		NavigationDrawerFragment.NavigationDrawerCallbacks, ISetData {
 	
-	public static String DISH_KEY_NAME;
-	public static String DISH_KEY_TYPE;
-	public static int DISH_KEY_IMAGE_ID;
-	public static String DISH_KEY_IMAGE_INSTR;
-	public static String DISH_KEY_IMAGE_NAME;
+	public static String DISH_KEY_NAME = "dish_key_name";
+	public static String DISH_KEY_TYPE = "dish_key_type";
+	public static int DISH_KEY_IMAGE_ID = 1;
+	public static String DISH_KEY_IMAGE_INSTR = "dish_key_image_instr";
+	public static String DISH_KEY_IMAGE_NAME = "dish_key_image_name";
 	
-	private Dish[] mDishes;
+	private static final String SERVER_URL = "http://10.0.2.2:8080/lunchbuddy/dishes.xml";
+	private static final String TAG = "MainActivity";
+	private static final String LOG_XML = "XML DATA: ";
+	
+	private ArrayList<Dish> mDishes;
 	private MyAdapter mAdapter;
 	
 	ArrayList<Dish> mDishesPasta;
@@ -59,7 +64,8 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		mDishes = new Dish[]{new Dish("Spagetti bolognese", "pasta", getResources().getDrawable(R.drawable.pasta1), "pasta1"), new Dish("Lasagne", "pasta", getResources().getDrawable(R.drawable.pasta2), "pasta2"), new Dish("Stuvade makaroner", "pasta", getResources().getDrawable(R.drawable.pasta3), "pasta3") ,new Dish("Soup1", "soup", getResources().getDrawable(R.drawable.soppa1), "soppa1"), new Dish("Soup2", "soup", getResources().getDrawable(R.drawable.soppa2), "soppa2"), new Dish("Soup3", "soup", getResources().getDrawable(R.drawable.soppa3), "soppa3"), new Dish("Vegetariskt 1", "vegetarian", getResources().getDrawable(R.drawable.veg1), "veg1"), new Dish("Vegetariskt 2", "vegetarian", getResources().getDrawable(R.drawable.veg2), "veg2")};
+		//mDishes = new Dish[]{new Dish("Spagetti bolognese", "pasta", getResources().getDrawable(R.drawable.pasta1), "pasta1"), new Dish("Lasagne", "pasta", getResources().getDrawable(R.drawable.pasta2), "pasta2"), new Dish("Stuvade makaroner", "pasta", getResources().getDrawable(R.drawable.pasta3), "pasta3") ,new Dish("Soup1", "soup", getResources().getDrawable(R.drawable.soppa1), "soppa1"), new Dish("Soup2", "soup", getResources().getDrawable(R.drawable.soppa2), "soppa2"), new Dish("Soup3", "soup", getResources().getDrawable(R.drawable.soppa3), "soppa3"), new Dish("Vegetariskt 1", "vegetarian", getResources().getDrawable(R.drawable.veg1), "veg1"), new Dish("Vegetariskt 2", "vegetarian", getResources().getDrawable(R.drawable.veg2), "veg2")};
+		mDishes = null;
 		
 		mDishesListView =(ListView) findViewById(R.id.dishesListView);
 		
@@ -67,23 +73,11 @@ public class MainActivity extends ActionBarActivity implements
 		mDishesSoup = new ArrayList<Dish>();
 		mDishesVeg= new ArrayList<Dish>();
 	
-		String xml = new DataFetch(MainActivity.this).fetchXML(xml_asset_path);
+		DataFetch mData = new DataFetch(MainActivity.this, (ISetData) this);
 		
-		System.out.println("XML: " + xml);
+		mData.execute(SERVER_URL, null, null);
 		
 		
-		for(Dish d : mDishes){
-			if(d.getType().equals("pasta")){
-				mDishesPasta.add(d);
-			}
-			if(d.getType().equals("vegetarian")){	
-				mDishesVeg.add(d);
-			}
-			if(d.getType().equals("soup")){
-				mDishesSoup.add(d);
-			}
-		}
-						
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -115,7 +109,7 @@ public class MainActivity extends ActionBarActivity implements
 					Intent myIntent = new Intent(MainActivity.this, DishActivity.class);
 					myIntent.putExtra(String.valueOf(MainActivity.DISH_KEY_IMAGE_ID), drawableID);
 					myIntent.putExtra(MainActivity.DISH_KEY_IMAGE_INSTR, temp.getInstructions());
-					myIntent.putExtra(MainActivity.DISH_KEY_NAME, temp.getImageName());
+					myIntent.putExtra(MainActivity.DISH_KEY_NAME, temp.getName());
 					myIntent.putExtra(MainActivity.DISH_KEY_TYPE, temp.getType());
 					myIntent.putExtra(MainActivity.DISH_KEY_IMAGE_NAME, temp.getImageName());
 					
@@ -156,32 +150,35 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	public void onSectionAttached(int number) {
-		switch (number) {
-		case 1:
-			mTitle = getString(R.string.title_section1);
-			mAdapter=new MyAdapter(mDishesPasta);
-			mDishesListView.setAdapter(mAdapter);
-			break;
-		case 2:
-			mTitle = getString(R.string.title_section2);
-			mAdapter=new MyAdapter(mDishesVeg);
-			mDishesListView.setAdapter(mAdapter);
-			break;
-		case 3:
-			mTitle = getString(R.string.title_section3);
-			mAdapter=new MyAdapter(mDishesSoup);
-			mDishesListView.setAdapter(mAdapter);
-			
-			break;
-		case 4:
-			mTitle = getString(R.string.title_section4);
-			break;
-		case 5:
-			mTitle = getString(R.string.title_section5);
-			break;
-		case 6:
-			mTitle = getString(R.string.title_section6);
-			break;
+		
+		if(mDishes !=null){
+			switch (number) {
+			case 1:			
+				mTitle = getString(R.string.title_section1);
+				mAdapter=new MyAdapter(mDishesPasta);
+				mDishesListView.setAdapter(mAdapter);
+				break;
+			case 2:
+				mTitle = getString(R.string.title_section2);
+				mAdapter=new MyAdapter(mDishesVeg);
+				mDishesListView.setAdapter(mAdapter);
+				break;
+			case 3:
+				mTitle = getString(R.string.title_section3);
+				mAdapter=new MyAdapter(mDishesSoup);
+				mDishesListView.setAdapter(mAdapter);
+				
+				break;
+			case 4:
+				mTitle = getString(R.string.title_section4);
+				break;
+			case 5:
+				mTitle = getString(R.string.title_section5);
+				break;
+			case 6:
+				mTitle = getString(R.string.title_section6);
+				break;
+			}
 		}
 	}
 
@@ -256,5 +253,20 @@ public class MainActivity extends ActionBarActivity implements
 					ARG_SECTION_NUMBER));
 		}
 	}
-
+	@Override
+	public void setData(ArrayList<Dish> mDishes) {		
+		this.mDishes=mDishes;
+		
+		for(Dish d : mDishes){
+			if(d.getType().equals("pasta")){
+				mDishesPasta.add(d);				
+			}
+			if(d.getType().equals("vegetarian")){	
+				mDishesVeg.add(d);
+			}
+			if(d.getType().equals("soup")){
+				mDishesSoup.add(d);
+			}
+		}		
+	}
 }

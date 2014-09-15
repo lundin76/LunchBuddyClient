@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:id="@+id/dishMainRelativeLayout"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="vertical"
@@ -10,7 +11,6 @@
 	        android:id="@+id/dishImageView"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:src="@drawable/pannkakor" 
 	        android:padding="10dp"
 	        android:contentDescription="@string/descr"/>
 		

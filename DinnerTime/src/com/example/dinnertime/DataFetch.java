@@ -1,103 +1,155 @@
 package com.example.dinnertime;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.util.ByteArrayBuffer;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.util.Log;
 
-public class DataFetch {
-	
-	private static final String DISHES_TAG="Dishes";
-	private static final String DISH_TAG="Dish";
-	private static final String DISH_NAME="Name";
-	private static final String DISH_DESCRIPTION="Description";
-	private static final String DISH_IMG_URL="Img_Url";
-	private static final String DISH_CATEGORY="Category";
+public class DataFetch extends AsyncTask<String, String, ArrayList<Dish>> {
+
+	private static final String TAG = "DataFetch";
+	private static final String LOG_DOWNLOAD = "Donwloaded from server: ";
+	private static final String LOG_BAD_URL = "Not incorrect URL";
+	private static final String LOG_NO_DATA_FETCH = "Unable to retrieve data from server ";
+	private static final String LOG_BAD_XML = "Incorrect XML on server";
 	
 	private Context mCont;
-	
-	public DataFetch(Context context){
+	private ArrayList<Dish> dishes;
+	private ISetData mDataSetter;
+		
+	public DataFetch(Context context, ISetData mDataSetter){
 		this.mCont=context;
+		this.mDataSetter=mDataSetter;
 	}
 	
-	public String fetchXML(String path){
-		String xml = null;
-		AssetManager am = mCont.getAssets();		
-		InputStream is;
-		
+//	public ArrayList<Dish> fetchXML(String path){
+//		String xml = null;
+//		AssetManager am = mCont.getAssets();		
+//		InputStream is;
+//		
+//		try {
+//			is = am.open(path);
+//			int length = is.available();
+//			byte[] data = new byte[length];
+//			is.read(data);
+//			xml = new String(data);
+//			
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}		
+//		
+//		try {
+//			dishes = (ArrayList<Dish>) new XMLParse().parse(xml);
+//		} catch (XmlPullParserException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return dishes;
+//	}
+	
+	
+	
+	public String fetchXMLfromUrl(String url_string){
+		URL url = null;
 		try {
-			is = am.open(path);
-			int length = is.available();
-			byte[] data = new byte[length];
-			is.read(data);
-			xml = new String(data);
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
-		
-		try {
-			parse(xml);
-		} catch (XmlPullParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			url = new URL(url_string);
+		} catch (MalformedURLException e1) {
+			Log.i(TAG, LOG_BAD_URL);
+			e1.printStackTrace();
+			return null;
 		}
-		return xml;
+		String xml = null;
+		
+		URLConnection ucon;
+		try {
+			ucon = url.openConnection();
+			InputStream is = ucon.getInputStream();
+			BufferedInputStream bis = new BufferedInputStream(is);
+			
+			ByteArrayBuffer baf = new ByteArrayBuffer(5000);
+	        int next = 0;
+	        while ((next= bis.read()) != -1) {
+	           baf.append((byte) next);
+	        }
+		
+	        xml = new String(baf.toByteArray());
+		
+		} catch (IOException e) {
+			Log.i(TAG, LOG_NO_DATA_FETCH);
+			e.printStackTrace();
+			return null;
+		}
+		        
+        Log.i(TAG, LOG_DOWNLOAD + xml);
+        return xml;		
 	}
 	
-	private List parse(String xml) throws XmlPullParserException, IOException {
-	    List<Dish> dish_entries = new ArrayList<Dish>();
-	    
-	    XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-	     factory.setNamespaceAware(true);
-	     XmlPullParser xpp = factory.newPullParser();
+	@Override
+	protected ArrayList<Dish> doInBackground(String... params) {		
+		if (params[0] != null){
+			String xml = fetchXMLfromUrl(params[0]);
+			ArrayList<Dish> dishes = null;
+			
+			try {
+				dishes = (ArrayList<Dish>) new XMLParse().parse(xml);
+								
+			} catch (XmlPullParserException e) {
+				Log.i(TAG, LOG_BAD_XML);
+				e.printStackTrace();
+			} catch (IOException e) {
+				Log.i(TAG, LOG_NO_DATA_FETCH);
+				e.printStackTrace();
+			}
+			
+			
+			for(Dish d : dishes){
+				try {
+					Drawable image = DataFetch.fetchImage(d.getImageName());
+					d.setImage(image);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}			
+			return dishes;
+		}
+		return null;
+	}
+	protected void onPostExecute(ArrayList<Dish> result) {
+	        mDataSetter.setData(result);
+    }
+	
+	public static Drawable fetchImage(String url) throws IOException {
+	    Bitmap x;
 
-	     xpp.setInput( new StringReader (xml));
-	     int eventType = xpp.getEventType();
-	     
-	     while (eventType != XmlPullParser.END_DOCUMENT) {
-	    	 String tagName=xpp.getName();	
-	    	 	    	 
-	    	 if(eventType == XmlPullParser.START_DOCUMENT) {
-	          System.out.println("Start document");
-	    	 } else if(eventType == XmlPullParser.START_TAG) {	          
-	    		 System.out.println("Start tag "+tagName);
-		         if(tagName.equalsIgnoreCase(DISH_TAG)){
-		        	 Dish d = new Dish();
-		        	 
-		        	 for(int i=0; i<xpp.getAttributeCount(); i++){
-		        		 String attName = xpp.getAttributeName(i);
-		        		 if(attName.equalsIgnoreCase(DISH_CATEGORY)){
-		        			 d.setType(attName);
-		        		 }else if(attName.equalsIgnoreCase(DISH_NAME)){
-		        			 d.setImageName(attName);
-		        		 }else if(attName.equalsIgnoreCase(DISH_DESCRIPTION)){
-		        			 d.setImageName(attName);
-		        		 }else if(attName.equalsIgnoreCase(DISH_IMG_URL)){
-		        			 d.setImageName(attName);
-		        		 }
-		        	 }
-		        	 dish_entries.add(d);
-		        	  		   
-	         	}
-	        }else if(eventType == XmlPullParser.END_TAG) {	
-	    	  System.out.println("End tag "+tagName);
-	      	}
-	    	 eventType = xpp.next();
-	     	}
-	     System.out.println("End document");				
-	     return dish_entries;
+	    HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+	    conn.connect();
+	    InputStream input = conn.getInputStream();
+
+	    x = BitmapFactory.decodeStream(input);
+	    return new BitmapDrawable(x);
 	}
 }
 

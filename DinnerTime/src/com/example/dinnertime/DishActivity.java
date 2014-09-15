@@ -23,7 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class DishActivity extends Activity {
+public class DishActivity extends Activity implements ISetImage{
 	
 	private Dish mDish;
 	private Button mIngredientsBtn;
@@ -40,9 +40,23 @@ public class DishActivity extends Activity {
 		}
 		
 		Bundle b =  getIntent().getExtras();		
-		Drawable d = getResources().getDrawable((Integer) b.get(String.valueOf(MainActivity.DISH_KEY_IMAGE_ID)));
-		mDish = new Dish((String)b.get(MainActivity.DISH_KEY_NAME), (String)b.get(MainActivity.DISH_KEY_TYPE), d, (String) b.get(MainActivity.DISH_KEY_IMAGE_NAME));
+		//Drawable d = getResources().getDrawable((Integer) b.get(String.valueOf(MainActivity.DISH_KEY_IMAGE_ID)));
 		
+		mDish = new Dish((String)b.get(MainActivity.DISH_KEY_NAME), (String)b.get(MainActivity.DISH_KEY_TYPE), null, (String) b.get(MainActivity.DISH_KEY_IMAGE_NAME));
+		new ImageFetch((ISetImage)this).execute(mDish.getImageName());
+		
+		populate();
+		
+		super.onCreate(savedInstanceState);
+	}
+	private void populate(){
+		TextView tv = (TextView) this.findViewById(R.id.dishdescriptionTxt);
+		tv.setText(mDish.getInstructions());
+		
+		if(mDish.getImage()!=null){
+			ImageView iv = (ImageView) this.findViewById(R.id.dishImageView);			
+			iv.setImageDrawable(mDish.getImage());
+		}
 		
 		mIngredientsBtn = (Button) this.findViewById(R.id.ingredientsBtn);
 		mIngredientsBtn.setOnClickListener(new View.OnClickListener(){
@@ -64,19 +78,7 @@ public class DishActivity extends Activity {
 				
 				lv.setAdapter(cadapt);				
 				
-			}});
-
-		populate();
-		
-		super.onCreate(savedInstanceState);
-	}
-	private void populate(){
-		TextView tv = (TextView) this.findViewById(R.id.dishdescriptionTxt);
-		tv.setText(mDish.getInstructions());
-		
-		ImageView iv = (ImageView) this.findViewById(R.id.dishImageView);
-		iv.setImageDrawable(mDish.getImage());
-		 			
+			}});		
 	}
 	
 
@@ -112,9 +114,18 @@ public class DishActivity extends Activity {
 				CheckBox cb = (CheckBox) ll.findViewById(R.id.checkBox1);
 				cb.setChecked(item.ismCheckBox());
 			}
-			return ll;	
+			return ll;
 			
-		}		
-		
+		}
 	}
+
+	@Override
+	public void setImage(Drawable image) {
+		mDish.setImage(image);
+		((ImageView)findViewById(R.id.dishImageView)).setImageDrawable(mDish.getImage());
+		
+		findViewById(R.id.dishImageView).invalidate();
+		//(findViewById(R.id.dishMainRelativeLayout)).requestLayout();
+			
+	}	
 }
