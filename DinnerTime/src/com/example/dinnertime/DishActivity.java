@@ -5,11 +5,7 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.DialogInterface.OnClickListener;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -27,35 +23,26 @@ public class DishActivity extends Activity implements ISetImage{
 	
 	private Dish mDish;
 	private Button mIngredientsBtn;
-	private CheckListItem[] list={new CheckListItem("Mjölk"), new CheckListItem("Vetemjöl"), new CheckListItem("Ägg"), new CheckListItem("Sirap")};
-	private ArrayList<CheckListItem> mItems;
+	//private Ingredient[] list={new Ingredient("Mjölk"), new Ingredient("Vetemjöl"), new Ingredient("Ägg"), new Ingredient("Sirap")};
+	//private ArrayList<Ingredient> mIngredients;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		this.setContentView(R.layout.main_dish_layout);
-		 
-		mItems = new ArrayList<CheckListItem>();
-		for(CheckListItem cli : list){
-			mItems.add(cli);
-		}
 		
-		Bundle b =  getIntent().getExtras();		
-		//Drawable d = getResources().getDrawable((Integer) b.get(String.valueOf(MainActivity.DISH_KEY_IMAGE_ID)));
-		
-		mDish = new Dish((String)b.get(MainActivity.DISH_KEY_NAME), (String)b.get(MainActivity.DISH_KEY_TYPE), null, (String) b.get(MainActivity.DISH_KEY_IMAGE_NAME));
-		new ImageFetch((ISetImage)this).execute(mDish.getImageName());
-		
+		mDish = (Dish) getIntent().getSerializableExtra(MainActivity.DISH_SERIALIZED_DISH);
+		new ImageFetch((ISetImage)this).execute(mDish.getmImageName());
 		populate();
 		
 		super.onCreate(savedInstanceState);
 	}
 	private void populate(){
 		TextView tv = (TextView) this.findViewById(R.id.dishdescriptionTxt);
-		tv.setText(mDish.getInstructions());
+		tv.setText(mDish.getmInstructions());
 		
-		if(mDish.getImage()!=null){
+		if(mDish.getmImage()!=null){
 			ImageView iv = (ImageView) this.findViewById(R.id.dishImageView);			
-			iv.setImageDrawable(mDish.getImage());
+			iv.setImageDrawable(mDish.getmImage());
 		}
 		
 		mIngredientsBtn = (Button) this.findViewById(R.id.ingredientsBtn);
@@ -74,7 +61,7 @@ public class DishActivity extends Activity implements ISetImage{
 					
 				AlertDialog ad = bu.create();
 				ad.show();
-				CheckListAdapter cadapt = new CheckListAdapter(mItems);
+				CheckListAdapter cadapt = new CheckListAdapter(mDish.getmIngredients());
 				
 				lv.setAdapter(cadapt);				
 				
@@ -82,11 +69,11 @@ public class DishActivity extends Activity implements ISetImage{
 	}
 	
 
-	private class CheckListAdapter extends ArrayAdapter<CheckListItem>{
+	private class CheckListAdapter extends ArrayAdapter<Ingredient>{
 		
-		ArrayList<CheckListItem> mCheckListItems;
+		ArrayList<Ingredient> mCheckListItems;
 		
-		public CheckListAdapter(ArrayList<CheckListItem> mCheckListItems) {
+		public CheckListAdapter(ArrayList<Ingredient> mCheckListItems) {
 			super(DishActivity.this, R.layout.row_checklist_layout, mCheckListItems);
 			System.out.println("Constructor " + mCheckListItems.size());
 			
@@ -96,23 +83,25 @@ public class DishActivity extends Activity implements ISetImage{
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 						
-			CheckListItem item = mCheckListItems.get(position);
+			Ingredient item = mCheckListItems.get(position);
 			LinearLayout ll = (LinearLayout) convertView;
 			LayoutInflater li = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			
 			if(ll == null){
 				ll = (LinearLayout) li.inflate(R.layout.row_checklist_layout, parent, false);								
 				TextView tv = (TextView) ll.findViewById(R.id.checklistText);
-				tv.setText(item.getmIngredient());	
-				
+				tv.setText(item.getmIngredient());					
 				CheckBox cb = (CheckBox) ll.findViewById(R.id.checkBox1);
 				cb.setChecked(item.ismCheckBox());
+				TextView tva = (TextView) ll.findViewById(R.id.checkListAmount);
+				tva.setText(item.getmAmount());
 			}else{
 				TextView tv = (TextView) ll.findViewById(R.id.checklistText);
 				tv.setText(item.getmIngredient());
-			
 				CheckBox cb = (CheckBox) ll.findViewById(R.id.checkBox1);
 				cb.setChecked(item.ismCheckBox());
+				TextView tva = (TextView) ll.findViewById(R.id.checkListAmount);
+				tva.setText(item.getmAmount());
 			}
 			return ll;
 			
@@ -121,11 +110,9 @@ public class DishActivity extends Activity implements ISetImage{
 
 	@Override
 	public void setImage(Drawable image) {
-		mDish.setImage(image);
-		((ImageView)findViewById(R.id.dishImageView)).setImageDrawable(mDish.getImage());
-		
+		mDish.setmImage(image);
+		((ImageView)findViewById(R.id.dishImageView)).setImageDrawable(mDish.getmImage());
 		findViewById(R.id.dishImageView).invalidate();
-		//(findViewById(R.id.dishMainRelativeLayout)).requestLayout();
 			
 	}	
 }

@@ -1,7 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dishes>
-    <Dish category="pasta" name="Spaghetti" description="This is the description of the spaghetti dish" image_url="url">
+    <Dish category="pasta" dish_name="paghetti bolognese" description="This is the description of the spaghetti dish" image_url="http://10.0.2.2:8080/lunchbuddy/pasta1.png">
+			<ingredient ingredient_name="Syrap" amount="1 dl"/>
+			<ingredient ingredient_name="Milk" amount="2 l"/>
+			<ingredient ingredient_name="Honey" amount="1 dl"/>
+			<ingredient ingredient_name="Eggs" amount="4"/>
+			<ingredient ingredient_name="Eggs" amount="4"/>
+			<ingredient ingredient_name="Eggs" amount="4"/>
+			<ingredient ingredient_name="Eggs" amount="4"/>
+			<ingredient ingredient_name="Eggs" amount="4"/>			
     </Dish>    
-    <Dish category="vegetarian" name="sallad" description="This is the description of the spaghetti dish" image_url="url">
+    <Dish category="pasta" dish_name="Lasagne" description="This is the descriptio2n of the spaghetti dish" image_url="http://10.0.2.2:8080/lunchbuddy/pasta2.png">
+    </Dish>
+	<Dish category="pasta" dish_name="Stuvade makaroner" description="This is the description of the spaghetti dish" image_url="http://10.0.2.2:8080/lunchbuddy/pasta3.png">
+    </Dish>
+	<Dish category="soup" dish_name="soppa 1" description="This is the description of the spaghetti dish" image_url="http://10.0.2.2:8080/lunchbuddy/soppa1.png">
+    </Dish>
+	<Dish category="soup" dish_name="soppa 2" description="This is the description of the spaghetti dish" image_url="http://10.0.2.2:8080/lunchbuddy/soppa2.png">
+    </Dish>
+	<Dish category="soup" dish_name="soppa 3" description="This is the description of the spaghetti dish" image_url="http://10.0.2.2:8080/lunchbuddy/soppa3.png">
+    </Dish>
+	<Dish category="vegetarian" dish_name="veg 1" description="This is the description of the spaghetti dish" image_url="http://10.0.2.2:8080/lunchbuddy/veg1.png">
+    </Dish>
+	<Dish category="vegetarian" dish_name="veg 2" description="This is the description of the spaghetti dish" image_url="http://10.0.2.2:8080/lunchbuddy/veg2.png">
+    </Dish>	
+	<Dish category="vegetarian" dish_name="Sallad" description="This is the description of the spaghetti dish" image_url="http://pizzeria-ferrari.se/onewebstatic/1c4fdb37f2-sallad.jpg">
     </Dish>    
 </Dishes>

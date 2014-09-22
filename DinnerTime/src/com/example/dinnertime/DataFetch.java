@@ -32,13 +32,10 @@ public class DataFetch extends AsyncTask<String, String, ArrayList<Dish>> {
 	private static final String LOG_BAD_URL = "Not incorrect URL";
 	private static final String LOG_NO_DATA_FETCH = "Unable to retrieve data from server ";
 	private static final String LOG_BAD_XML = "Incorrect XML on server";
-	
-	private Context mCont;
-	private ArrayList<Dish> dishes;
+
 	private ISetData mDataSetter;
 		
-	public DataFetch(Context context, ISetData mDataSetter){
-		this.mCont=context;
+	public DataFetch(ISetData mDataSetter){
 		this.mDataSetter=mDataSetter;
 	}
 	
@@ -127,8 +124,8 @@ public class DataFetch extends AsyncTask<String, String, ArrayList<Dish>> {
 			
 			for(Dish d : dishes){
 				try {
-					Drawable image = DataFetch.fetchImage(d.getImageName());
-					d.setImage(image);
+					Drawable image = DataFetch.fetchImage(d.getmImageName());
+					d.setmImage(image);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

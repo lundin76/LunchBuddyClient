@@ -6,15 +6,27 @@
 		    
 	    <CheckBox
 	        android:id="@+id/checkBox1"
-	        android:layout_width="wrap_content"
+	        android:layout_width="0px"
 	        android:layout_height="wrap_content"
-	        android:padding="5dp"
+	        android:textSize="18sp"
+	        android:padding="10dp"
+	        android:layout_weight="2"
+	        android:gravity="center"
 	        />
 	    
 	    <TextView 
 	        android:id="@+id/checklistText"
 	        android:layout_height="wrap_content"
-	        android:layout_width="fill_parent"   
-	        android:padding="5dp"/>
+	        android:layout_width="0px"
+	        android:textSize="18sp"
+	        android:padding="10dp"
+	        android:layout_weight="8"/>
+	    
+	    <TextView 
+	        android:id="@+id/checkListAmount"
+	        android:layout_height="wrap_content"
+	        android:layout_width="0px"   
+	        android:padding="10dp"
+	        android:layout_weight="3"/>
 	    
 </LinearLayout>

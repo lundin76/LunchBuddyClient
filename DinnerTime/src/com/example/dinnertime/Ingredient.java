@@ -1,12 +1,29 @@
 package com.example.dinnertime;
 
-public class CheckListItem {
+import java.io.Serializable;
+
+public class Ingredient implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private boolean mCheckBox;
 	private String mIngredient;
+	private String mAmount;
+	
+	public String getmAmount() {
+		return mAmount;
+	}
+	public void setmAmount(String mAmount) {
+		this.mAmount = mAmount;
+	}
 	public boolean ismCheckBox() {
 		return mCheckBox;
 	}
-	public CheckListItem(String mIngredient) {
+	public Ingredient(){
+		
+	}
+	public Ingredient(String mIngredient) {
 		super();
 		this.mIngredient = mIngredient;
 	}

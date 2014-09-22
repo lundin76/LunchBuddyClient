@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,16 +26,15 @@ import android.widget.TextView;
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks, ISetData {
 	
-	public static String DISH_KEY_NAME = "dish_key_name";
-	public static String DISH_KEY_TYPE = "dish_key_type";
-	public static int DISH_KEY_IMAGE_ID = 1;
-	public static String DISH_KEY_IMAGE_INSTR = "dish_key_image_instr";
-	public static String DISH_KEY_IMAGE_NAME = "dish_key_image_name";
-	
+	public static final String DISH_KEY_NAME = "dish_key_name";
+	public static final String DISH_KEY_TYPE = "dish_key_type";
+	public static final int DISH_KEY_IMAGE_ID = 1;
+	public static final String DISH_KEY_IMAGE_INSTR = "dish_key_image_instr";
+	public static final String DISH_KEY_IMAGE_NAME = "dish_key_image_name";
+	public static final String DISH_KEY_INGREDIENTS = "dish_key_ingredients";
+	public  static final String DISH_SERIALIZED_DISH = "serialized_dish";
 	private static final String SERVER_URL = "http://10.0.2.2:8080/lunchbuddy/dishes.xml";
-	private static final String TAG = "MainActivity";
-	private static final String LOG_XML = "XML DATA: ";
-	
+		
 	private ArrayList<Dish> mDishes;
 	private MyAdapter mAdapter;
 	
@@ -73,7 +71,7 @@ public class MainActivity extends ActionBarActivity implements
 		mDishesSoup = new ArrayList<Dish>();
 		mDishesVeg= new ArrayList<Dish>();
 	
-		DataFetch mData = new DataFetch(MainActivity.this, (ISetData) this);
+		DataFetch mData = new DataFetch((ISetData) this);
 		
 		mData.execute(SERVER_URL, null, null);
 		
@@ -105,13 +103,9 @@ public class MainActivity extends ActionBarActivity implements
 				public void onClick(View v) {
 					Dish temp = dishes.get(position);
 					
-					int drawableID = getResources().getIdentifier(temp.getImageName(),"drawable", MainActivity.this.getPackageName());
 					Intent myIntent = new Intent(MainActivity.this, DishActivity.class);
-					myIntent.putExtra(String.valueOf(MainActivity.DISH_KEY_IMAGE_ID), drawableID);
-					myIntent.putExtra(MainActivity.DISH_KEY_IMAGE_INSTR, temp.getInstructions());
-					myIntent.putExtra(MainActivity.DISH_KEY_NAME, temp.getName());
-					myIntent.putExtra(MainActivity.DISH_KEY_TYPE, temp.getType());
-					myIntent.putExtra(MainActivity.DISH_KEY_IMAGE_NAME, temp.getImageName());
+					
+					myIntent.putExtra(MainActivity.DISH_SERIALIZED_DISH, temp);
 					
 					startActivity(myIntent);												
 				}				
@@ -123,16 +117,16 @@ public class MainActivity extends ActionBarActivity implements
 				tv = (TextView) llin.findViewById(R.id.dishText);
 				im = (ImageView) llin.findViewById(R.id.dishImageView); 
 				
-				tv.setText(dishes.get(position).getName());		
-				im.setImageDrawable(dishes.get(position).getImage());
+				tv.setText(dishes.get(position).getmName());		
+				im.setImageDrawable(dishes.get(position).getmImage());
 				im.setOnClickListener(cl);
 				return llin;
 			}else{
 				tv = (TextView) llin.findViewById(R.id.dishText);
 				im = (ImageView) llin.findViewById(R.id.dishImageView); 
 				
-				tv.setText(dishes.get(position).getName());	
-				im.setImageDrawable(dishes.get(position).getImage());
+				tv.setText(dishes.get(position).getmName());	
+				im.setImageDrawable(dishes.get(position).getmImage());
 				im.setOnClickListener(cl);
 				return llin;
 			}
@@ -258,15 +252,16 @@ public class MainActivity extends ActionBarActivity implements
 		this.mDishes=mDishes;
 		
 		for(Dish d : mDishes){
-			if(d.getType().equals("pasta")){
+			if(d.getmType().equals("pasta")){
 				mDishesPasta.add(d);				
 			}
-			if(d.getType().equals("vegetarian")){	
+			if(d.getmType().equals("vegetarian")){	
 				mDishesVeg.add(d);
 			}
-			if(d.getType().equals("soup")){
+			if(d.getmType().equals("soup")){
 				mDishesSoup.add(d);
 			}
 		}		
 	}
+	
 }

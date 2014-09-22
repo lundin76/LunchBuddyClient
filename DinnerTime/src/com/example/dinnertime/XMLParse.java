@@ -11,13 +11,18 @@ import org.xmlpull.v1.XmlPullParserFactory;
 public class XMLParse {
 	
 	private static final String DISH_TAG="dish";
-	private static final String DISH_NAME="name";
+	private static final String DISH_NAME="dish_name";
 	private static final String DISH_DESCRIPTION="description";
 	private static final String DISH_IMG_URL="image_url";
 	private static final String DISH_CATEGORY="category";
-
+	private static final String INGREDIENT_TAG = "ingredient";	
+	private static final String INGREDIENT_NAME="ingredient_name";
+	private static final String INGREDIENT_AMOUNT="amount";
+	private int mCurrDishPos;
+	
 	public List<Dish> parse(String xml) throws XmlPullParserException, IOException {
-	    List<Dish> dish_entries = new ArrayList<Dish>();
+		mCurrDishPos=-1;
+		List<Dish> mDishEntries = new ArrayList<Dish>();
 	    
 	    XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 	     factory.setNamespaceAware(true);
@@ -40,24 +45,42 @@ public class XMLParse {
 		        		 String attName = xpp.getAttributeName(i);
 		        		 String attText = xpp.getAttributeValue(i);
 		        		 if(attName.equalsIgnoreCase(DISH_CATEGORY)){
-		        			 d.setType(attText);
+		        			 d.setmType(attText);
 		        		 }else if(attName.equalsIgnoreCase(DISH_NAME)){
-		        			 d.setName(attText);
+		        			 d.setmName(attText);
 		        		 }else if(attName.equalsIgnoreCase(DISH_DESCRIPTION)){
-		        			 d.setInstructions(attText);
+		        			 d.setmInstructions(attText);
 		        		 }else if(attName.equalsIgnoreCase(DISH_IMG_URL)){
-		        			 d.setImageName(attText);
+		        			 d.setmImageName(attText);
 		        		 }
 		        	 }
-		        	 dish_entries.add(d);
-		        	  		   
-	         	}
+		        	 mDishEntries.add(d);		 
+		        	 mCurrDishPos++;
+	         	}else if(tagName.equalsIgnoreCase(INGREDIENT_TAG)){
+	        		 
+	         		 Dish d = mDishEntries.get(mCurrDishPos);
+	         		 d.getmIngredients().add(new Ingredient());
+	         		 int pos = d.getmIngredients().size()-1;
+	         		 
+	        		 int attCount = xpp.getAttributeCount();
+	        		 for(int i=0; i<attCount && attCount==2; i++){
+	        			 
+	        			 String attName = xpp.getAttributeName(i);
+		        		 String attText = xpp.getAttributeValue(i);
+		        		 	        			        		 
+		        		 if(attName.equalsIgnoreCase(INGREDIENT_NAME)){
+		        			 d.getmIngredients().get(pos).setmIngredient(attText);
+		        		 }else if(attName.equalsIgnoreCase(INGREDIENT_AMOUNT)){
+		        			 d.getmIngredients().get(pos).setmAmount(attText);
+		        		 }
+	        		 }		        		 
+	        	 }
 	        }else if(eventType == XmlPullParser.END_TAG) {	
 	    	  System.out.println("End tag "+tagName);
 	      	}
 	    	 eventType = xpp.next();
 	     	}
 	     System.out.println("End document");				
-	     return dish_entries;
+	     return mDishEntries;
 	}
 }
