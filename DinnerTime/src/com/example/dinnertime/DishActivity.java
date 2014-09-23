@@ -23,14 +23,13 @@ public class DishActivity extends Activity implements ISetImage{
 	
 	private Dish mDish;
 	private Button mIngredientsBtn;
-	//private Ingredient[] list={new Ingredient("Mjölk"), new Ingredient("Vetemjöl"), new Ingredient("Ägg"), new Ingredient("Sirap")};
-	//private ArrayList<Ingredient> mIngredients;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		this.setContentView(R.layout.main_dish_layout);
 		
 		mDish = (Dish) getIntent().getSerializableExtra(MainActivity.DISH_SERIALIZED_DISH);
+				
 		new ImageFetch((ISetImage)this).execute(mDish.getmImageName());
 		populate();
 		
@@ -114,5 +113,10 @@ public class DishActivity extends Activity implements ISetImage{
 		((ImageView)findViewById(R.id.dishImageView)).setImageDrawable(mDish.getmImage());
 		findViewById(R.id.dishImageView).invalidate();
 			
-	}	
+	}
+	
+	 @Override
+	 public Object onRetainNonConfigurationInstance() {
+		 return mDish;
+	 }
 }

@@ -7,7 +7,7 @@
     <string name="title_section3">Soup</string>
     <string name="title_section4">Kötträtter</string><string name="title_section5">Wok</string><string name="title_section6">Favoriter</string><string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_example">Example action</string>
+  
     <string name="action_settings">Settings</string>
     <string name="ingredientsBtn">Ingredients</string>
     <string name="descr">The description :-)</string>

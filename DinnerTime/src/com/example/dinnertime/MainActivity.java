@@ -62,7 +62,6 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		//mDishes = new Dish[]{new Dish("Spagetti bolognese", "pasta", getResources().getDrawable(R.drawable.pasta1), "pasta1"), new Dish("Lasagne", "pasta", getResources().getDrawable(R.drawable.pasta2), "pasta2"), new Dish("Stuvade makaroner", "pasta", getResources().getDrawable(R.drawable.pasta3), "pasta3") ,new Dish("Soup1", "soup", getResources().getDrawable(R.drawable.soppa1), "soppa1"), new Dish("Soup2", "soup", getResources().getDrawable(R.drawable.soppa2), "soppa2"), new Dish("Soup3", "soup", getResources().getDrawable(R.drawable.soppa3), "soppa3"), new Dish("Vegetariskt 1", "vegetarian", getResources().getDrawable(R.drawable.veg1), "veg1"), new Dish("Vegetariskt 2", "vegetarian", getResources().getDrawable(R.drawable.veg2), "veg2")};
 		mDishes = null;
 		
 		mDishesListView =(ListView) findViewById(R.id.dishesListView);

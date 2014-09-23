@@ -7,10 +7,6 @@ import android.graphics.drawable.Drawable;
 
 public class Dish implements Serializable{
 	
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private String mName;
 	private String mType;

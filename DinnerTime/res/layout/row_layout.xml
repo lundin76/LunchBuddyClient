@@ -7,17 +7,18 @@
 
     <ImageView
         android:id="@+id/dishImageView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/pasta1" />
 
     <TextView
         android:id="@+id/dishText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10" 
-        android:gravity="center">
-
+        android:layout_height="16dp"        
+        android:gravity="center"
+		android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        >
         <requestFocus />
     </TextView>
 
